@@ -96,6 +96,9 @@ exports.genre_delete_get =(req, res,next)=>{
     async.parallel({
       genre: function(callback){
         Genre.findById(req.params.id).exec(callback)
+      },
+      genre_books:function(callback){
+        Book.find({'genre': req.params.id}).exec(callback)
       }
     }, function(err, results){
       if(err) return next(err);
@@ -103,9 +106,11 @@ exports.genre_delete_get =(req, res,next)=>{
         res.redirect('/catalog/genres')
       }
 
-      res.render('genre_delete',{title:'Delete Genre', genre: results.genre});
-    })
+      res.render('genre_delete',{title:'Delete Genre', genre: results.genre, genre_books: results.genre_books });
+    });
 }
+
+
 exports.genre_delete_post =(req, res,next)=>{
     async.parallel({
       genre: function(callback){
