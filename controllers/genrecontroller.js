@@ -115,22 +115,77 @@ exports.genre_delete_post =(req, res,next)=>{
     async.parallel({
       genre: function(callback){
         Genre.findById(req.body.genre_id).exec(callback);
+      },
+      book: function(callback) {
+        Book.find({'genre': req.body.genre_id}).exec(callback)
       }
     },function(err, results){
       if(err) return next(err);
 
+//Check if genre as no related Books
+if(results.book.length >0){
+  res.render('genre_delete',{title:'Delete Genre', genre: results.genre, genre_books: results.genre_books });
+  return;
+}
+else{
       //successful
       Genre.findByIdAndDelete(req.body.genre_id,function(err){
           if (err) { return next(err)};
 
           res.redirect('/catalog/genres');
       })
+    }
     })
 }
 exports.genre_update_get=(req, res)=>{
+  async.parallel({
+    genre: function(callback){
+      Genre.findById(req.params.id);
+    }
+  }, function(err, results){
+    if(err) { return next(err)}
+
+    if(results.genre ==null){
+      let err= new Error('Genre Not Found');
+      err.status =404;
+      return next(err);
+    }
+    res.render('genre_form', { title: 'Update Genre', genre: results.genre});
+  }
+  )
 
 }
-exports.genre_update_post=(req, res)=>{
+exports.genre_update_post=[
+  // Validate and sanitize the name field.
+  body('name', 'Genre name required').trim().isLength({ min: 1 }).escape(),
+
+  // Process request after validation and sanitization.
+  (req, res, next) => {
+
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a genre object with escaped and trimmed data.
+    var genre = new Genre(
+      { name: req.body.name }
+    );
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render('genre_form', { title: 'Create Genre', genre: genre, errors: errors.array()});
+      return;
+    }
+    else{
+      Genre.findByIdAndUpdate(req.params.id,genre,{},function(err,updated_genre){
+        if(err) { return next(err); }
+
+        //Successful -redirect to book detail page
+        res.redirect(updated_genre.url);
+      })
+    }
+
+
+  }
+];
     
-}
 

@@ -91,10 +91,33 @@ exports.bookinstance_create_post = [
   }
 ];
 
-exports.bookinstance_delete_get =(req, res)=>{
-
+exports.bookinstance_delete_get =(req, res,next)=>{
+    async.parallel({
+      bookInstance: function(callback) {
+        BookInstance.findById(req.params.id).exec(callback);
+      }
+    },function(err, results){
+      if(err) { return next(err)}
+      if(results.bookInstance==null){
+        res.redirect('/catalog/bookinstances');
+      }
+      res.render('bookinstance_delete',{ title:"Book Instance Delete", bookinstance:results.bookInstance});
+    })
 }
-exports.bookinstance_delete_post =(req, res)=>{
+exports.bookinstance_delete_post =(req, res,next)=>{
+async.parallel({
+  bookInstance: function(callback) {
+    BookInstance.findById(req.body.bookinstace_id).exec(callback);
+  }
+},function(err, results){
+  if(err) { return next(err)}
+
+  BookInstance.findByIdAndDelete(req.body.bookinstace_id,function(err){
+    if(err) { return next(err)}
+
+    res.redirect('/catalog/bookinstances');
+  })
+})
 
 }
 exports.bookinstance_update_get=(req, res)=>{
