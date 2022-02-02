@@ -19,16 +19,15 @@ block content
       input#imprint.form-control(type='text' placeholder='Publisher and date information' name='imprint' required='true' value=(undefined===bookinstance ? '' : bookinstance.imprint))
     div.form-group
       label(for='due_back') Date when book available:
-      input#due_back.form-control(type='date' name='due_back' value=(undefined===bookinstance ? '' : bookinstance.due_back_formatted))
+      input#due_back.form-control(type='date' name='due_back' value=(undefined===bookinstance ? '' : bookinstance.due_back_formatted_for_update))
 
     div.form-group
       label(for='status') Status:
       select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
       
-        for status in statuses
-         - console.log(status)
-          if bookinstance.status.toString() 
-            option(value=status selected=(bookinstance.status == status ?'':bookinstance.status) ) #{status}
+        for status in statuses     
+          if bookinstance
+            option(value=status selected=(bookinstance.status == status ?'selected':false) ) #{status}
           else 
             option(value=status ) #{status}
 

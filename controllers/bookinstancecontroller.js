@@ -37,15 +37,18 @@ exports.bookinstance_detail = function(req, res, next) {
 
 // Display BookInstance create form on GET.
 exports.bookinstance_create_get = function(req, res, next) {
-  
+ 
+  var status =['Maintenance','Available','Loaned','Reserved'];
+  //res.json({status : status})
+
+  //Return All the books created
   Book.find({},'title')
   .exec(function (err, books) {
     if (err) { return next(err); }
     // Successful, so render.
-    let status =['Maintenance','Available','Loaned','Reserved'];
     
-    res.render('bookinstance_form', {title: 'Create BookInstance', book_list: books,statuses:status});
-  });
+    res.render('bookinstance_form', {title: 'Create BookInstance', book_list: books,statuses: status});
+  }); 
 
 };
 
