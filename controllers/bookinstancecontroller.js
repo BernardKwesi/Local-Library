@@ -37,12 +37,14 @@ exports.bookinstance_detail = function(req, res, next) {
 
 // Display BookInstance create form on GET.
 exports.bookinstance_create_get = function(req, res, next) {
-
+  
   Book.find({},'title')
   .exec(function (err, books) {
     if (err) { return next(err); }
     // Successful, so render.
-    res.render('bookinstance_form', {title: 'Create BookInstance', book_list: books});
+    let status =['Maintenance','Available','Loaned','Reserved'];
+    
+    res.render('bookinstance_form', {title: 'Create BookInstance', book_list: books,statuses:status});
   });
 
 };
@@ -101,6 +103,7 @@ exports.bookinstance_delete_get =(req, res,next)=>{
       if(results.bookInstance==null){
         res.redirect('/catalog/bookinstances');
       }
+     
       res.render('bookinstance_delete',{ title:"Book Instance Delete", bookinstance:results.bookInstance});
     })
 }
@@ -125,7 +128,7 @@ async.parallel({
 exports.bookinstance_update_get=(req, res,next)=>{
       async.parallel({
             bookinstance : function(callback){
-              BookInstance.findById(req.params.id).populate('book').exec(callback);
+              BookInstance.findById(req.params.id).exec(callback);
             },
             books: function(callback){
               Book.find(callback);
@@ -137,8 +140,8 @@ exports.bookinstance_update_get=(req, res,next)=>{
           err.status =404;
           return next(err);
         }
-        console.log(results.bookinstance.book)
-        res.render('bookinstance_form',{title:'Update BookInstance',bookinstance: results.bookinstance, book_list : results.books});
+        let status =['Maintenance','Available','Loaned','Reserved'];
+        res.render('bookinstance_form',{title:'Update BookInstance',bookinstance: results.bookinstance, book_list : results.books, statuses:status});
       }
       )
 }
