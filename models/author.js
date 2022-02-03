@@ -56,9 +56,13 @@ AuthorSchema.virtual('url').get(function(){
     return '/catalog/author/' + this._id;
 });
 
-AuthorSchema.virtual('author_date_formatted').get(function(){
+AuthorSchema.virtual('author_birth_date_formatted').get(function(){
      return DateTime.fromJSDate(this.date_of_birth).toISODate();
-})
+});
+
+AuthorSchema.virtual('author_death_date_formatted').get(function(){
+    return DateTime.fromJSDate(this.date_of_death).toISODate();
+});
 
 module.exports = mongoose.model('Author', AuthorSchema);
 

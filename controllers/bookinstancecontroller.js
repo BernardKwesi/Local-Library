@@ -164,7 +164,8 @@ exports.bookinstance_update_post=[
 
       // Create a BookInstance object with escaped and trimmed data.
       var bookinstance = new BookInstance(
-        { book: req.body.book,
+        { _id:req.params.id,
+          book: req.body.book,
           imprint: req.body.imprint,
           status: req.body.status,
           due_back: req.body.due_back
